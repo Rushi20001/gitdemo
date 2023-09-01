@@ -1,0 +1,68 @@
+
+
+create table customer(
+customerid int identity(1,1),
+customername varchar (50),
+Address varchar(50),
+PhoneNo varchar(20)
+)
+insert into  customer values ('yuvi','delhi','9898')
+
+
+create table category(categoryid int identity(1,1),
+categoryname varchar(20)
+)
+insert into category values('electronics')
+
+create table products(productsid int identity(1,1),
+productname varchar(20),
+price decimal,
+stock int,
+categoryid int 
+)insert into products values('tv',30000,20,1)
+
+create table orders(ordersid int identity(1,1),
+customerid int,orderdate datetime,odstatus bit
+) 
+insert into orders values(2,GETDATE(),1)
+select * from orders
+create table orderdetails (
+orderdetailsid int identity(1,1),ordersid int,productid int,quantity int,totalprice decimal
+)
+insert into orderdetails values(3,2,3,000)
+select *from orderdetails
+
+
+--create table payment(paymentid int identity(1,1),orderid int,payamount decimal,paymethod varchar(20))
+select * from payment
+
+insert into payment values(3,00,'cod')
+alter trigger aaa
+on orderdetails
+after insert
+as
+begin
+
+update orderdetails
+set totalprice=pt.price*i.quantity
+from inserted  i inner join products pt on i.productid=pt.productsid where orderdetails.orderdetailsId in (select orderdetailsId from inserted) 
+end
+
+
+alter trigger updatepayamount
+on payment
+after insert
+as 
+begin
+declare @orderid int
+select @orderid=orderid from inserted
+
+declare @totalAmount decimal
+
+select @totalAmount=sum(totalprice ) 
+from inserted i join orderdetails od on od.ordersid=@orderid
+where ordersid=@orderid 
+
+update payment set PayAmount=@totalAmount
+where orderid=@orderid
+end 

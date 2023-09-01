@@ -1,0 +1,19 @@
+USE [practice]
+GO
+/****** Object:  Trigger [dbo].[totalbill_]    Script Date: 01-09-2023 18:25:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER trigger [dbo].[totalbill_]
+on [dbo].[orderdetails] 
+after insert 
+as
+begin
+update orderdetails set
+ totalbill=(orderdetails.price*orderdetails.quantity) from inserted where
+ orderdetails.orderdetailsId in (select orderdetailsId from inserted) 
+
+
+end
+--------------------------------------

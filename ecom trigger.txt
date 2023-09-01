@@ -1,0 +1,45 @@
+USE [ecom]
+GO
+/****** Object:  Trigger [dbo].[totalamount]    Script Date: 01-09-2023 18:38:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+----create trigger SetPaymentAmount
+----on orderitems
+----after insert
+--as begin
+
+--declare @orderid int
+--declare @paymentamount decimal
+
+--select top 1 @orderid= orderid from inserted
+
+--select @paymentamount=sum(i.quantity*i.Price) from inserted i 
+--inner join orderitems oi on oi.orderitemid=i.orderitemid
+--inner join products pt on pt.productid=i.productid 
+--where i.orderid=@orderid
+
+--update payments set PaymentAmount=@paymentamount where orderid=@orderid
+--end
+
+
+ALTER trigger [dbo].[totalamount]
+on [dbo].[orderitems]
+after insert
+as 
+begin
+declare @orderid int
+select @orderid=orderid from inserted
+
+declare @totalAmount decimal
+
+select @totalAmount=sum(oi.quantity* p.price ) 
+from orderitems oi
+inner join products p on oi.productid=p.productid
+where orderid=@orderid
+
+update payments set PaymentAmount=@totalAmount
+where orderid=@orderid
+end
+---------------------------------

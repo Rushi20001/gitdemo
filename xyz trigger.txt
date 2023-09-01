@@ -1,0 +1,42 @@
+USE [xyz]
+GO
+/****** Object:  Trigger [dbo].[aaa]    Script Date: 01-09-2023 18:22:35 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER trigger [dbo].[aaa]
+on [dbo].[orderdetails]
+after insert
+as
+begin
+
+update orderdetails
+set totalprice=pt.price*i.quantity
+from inserted  i inner join products pt on i.productid=pt.productsid where orderdetails.orderdetailsId in (select orderdetailsId from inserted) 
+end
+---------------------------------------------
+USE [xyz]
+GO
+/****** Object:  Trigger [dbo].[updatepayamount]    Script Date: 01-09-2023 18:23:19 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER trigger [dbo].[updatepayamount]
+on [dbo].[payment]
+after insert
+as 
+begin
+declare @orderid int
+select @orderid=orderid from inserted
+
+declare @totalAmount decimal
+
+select @totalAmount=sum(totalprice ) 
+from inserted i join orderdetails od on od.ordersid=@orderid
+where ordersid=@orderid 
+
+update payment set PayAmount=@totalAmount
+where orderid=@orderid
+end 

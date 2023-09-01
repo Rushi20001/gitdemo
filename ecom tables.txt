@@ -1,0 +1,116 @@
+create table users(
+userid int identity(1,1),
+username varchar (50),
+password varchar(20),
+Email varchar(50),
+Address varchar(50),
+PhoneNo varchar(20)
+)
+select * from users
+insert into users (username,password,Email,Address,PhoneNo,createon)values
+('ram','ram123','ram@y.com','pune','66-77',GETDATE())
+
+create table seller(
+sellerID int identity(51,1),
+SellerName varchar(50),
+sellerEmail varchar(50),
+sellerpass varchar(20),
+sellerAddress varchar(50),
+sellerContact varchar(20)
+)
+
+insert into seller values('fashionstore','f@g.com','f123','delhi','111-222',GETDATE())
+
+
+create table category(
+category int identity(101,1),
+categoryname varchar(50)
+)select * from category
+
+insert into category values('clothes',GETDATE())
+
+create table products(
+productid int identity(201,1),
+categoryid int,
+sellerid int,
+Productname varchar(20),
+price decimal,
+stock int,
+)
+insert into products values(102,52,'shirt',500,50,GETDATE())
+
+create table orders(
+ordersid int identity(301,1),
+userid int,
+orderdate datetime,
+status int
+)
+insert into orders values(1,GETDATE(),1)
+
+create table orderitems(
+orderitemid int identity(501,1),
+orderid int,
+productid int,
+quantity int,
+Price decimal,
+createon datetime
+)
+insert into orderitems values(301,201,1,10000,GETDATE())
+create table payments(
+paymentid int identity(1001,1),
+userid int,
+orderid int,
+paymentdate datetime,
+PaymentAmount decimal,
+Paymentmethod varchar(20)
+)
+
+insert into payments values (1,301,GETDATE(),null,'COD')
+
+create table rating(
+Ratingid int identity(21,1),
+userid int,
+productid int,
+rating int,
+createon datetime
+)
+
+insert into rating values(1,201,4,GETDATE())
+
+
+
+select * from users
+select * from seller
+select * from category
+select * from products
+select * from orders
+select * from orderitems
+select * from payments
+select * from rating
+
+
+update orders set userid=3 where ordersid=303
+insert into orderitems values(303,201,1,10000,GETDATE())
+insert into payments values(null,303,getdate(),null,'upi')
+
+
+
+
+
+
+
+SELECT
+    Orderid,
+    productid,
+   
+    quantity,
+    price,
+    quantity * price AS totalAmount
+FROM
+    orderitems;
+
+
+
+
+
+exec UserSp 0,'shivam','sv45','s@g.com','nsk','22-11'

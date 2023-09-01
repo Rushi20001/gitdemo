@@ -1,0 +1,43 @@
+USE [OnlineShop]
+GO
+/****** Object:  Trigger [dbo].[wallet2]    Script Date: 01-09-2023 18:29:00 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER trigger [dbo].[wallet2]
+on [dbo].[CartHistory]
+after insert
+as
+begin
+declare @orderDetailsid int
+declare @amount int
+declare @walletpoints int
+declare @quantity int
+declare @customerid int
+
+select @orderDetailsid=i.orderdetailsid,
+@amount=pt.Amount,
+@walletpoints=c.walletpoints,
+@quantity=pm.Quantity,
+@customerid=c.CustomerId
+from inserted i
+join orderDetails pm on i.orderdetailsid=pm.orderdetailsid
+join ProductTable pt on pt.ProductId=pm.productId 
+join customer c on c.CustomerId=pm.CustomerId
+
+declare @newbill int 
+
+ set @newbill=@quantity*@amount 
+set @newbill=@newbill-@walletpoints
+
+
+
+
+update orderDetails set totalbill=@newbill
+where orderdetailsid=@orderDetailsid
+ 
+ update Customer set walletpoints=walletpoints-@walletpoints
+ where CustomerId=@customerid
+
+end
