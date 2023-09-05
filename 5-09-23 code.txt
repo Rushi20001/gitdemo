@@ -1,0 +1,101 @@
+   public int Getstockvalue(int productid)
+        {
+            SqlConnection sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlconnection"]
+                .ToString());
+            string query = "select stock from products where productsid=@productsid";
+            SqlCommand cmd=new SqlCommand(query, sqlConnection);
+            cmd.Parameters.AddWithValue("@productsid",productid);
+            sqlConnection.Open ();
+            int availablestock= (int)cmd.ExecuteScalar();
+            sqlConnection.Close ();
+
+            return availablestock;
+        }
+        public void InsertOp(int productid,int quantity,out string msg)
+        {
+            msg=string.Empty;
+            SqlConnection sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlconnection"]
+                .ToString());
+            sqlConnection.Open();
+            int availablestock=Getstockvalue(productid);
+
+            if (availablestock<quantity)
+            {
+                msg = "Sorry...Stock is less than quantity";
+                return;          
+            }
+            SqlCommand cmd=new SqlCommand ("insert into orderdetails(ordersid,productid,quantity,price_per_unit," +
+                "totalprice,createdon)values(12,@productid,@quantity,45000,0,getdate())" , sqlConnection);
+           // cmd.Parameters.AddWithValue("@ordersid",ordersid);
+            cmd.Parameters.AddWithValue("@productid",productid);
+            cmd.Parameters.AddWithValue("@quantity", quantity);
+            //cmd.Parameters.AddWithValue("@price_per_unit",price_per_unit);
+            //cmd.Parameters.AddWithValue("@totalprice", totalprice);
+            //cmd.Parameters.AddWithValue("@createon", createOn);
+            cmd.ExecuteNonQuery ();
+            sqlConnection.Close ();
+            msg = "order inserted";
+        }
+    }
+---------------program.cs
+  DA_orderdetails ob = new DA_orderdetails();
+            ob.InsertOp(53,2,out string msg);
+            Console.WriteLine(msg);
+            Console.ReadKey();
+        }
+login---------------------------------
+ public bool Authenticateuser(string useremail, string userpass,out string validationmessage)
+            {
+            
+              
+                SqlConnection sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlconnection"]
+                    .ToString());
+            string query = "select count(*) from users where useremail=@useremail";
+            SqlCommand cmd = new SqlCommand(query, sqlConnection);
+            //cmd = new SqlCommand(query, sqlConnection);
+
+            cmd.Parameters.AddWithValue("@useremail", useremail);
+            cmd.Parameters.AddWithValue("@userpass", userpass);
+            sqlConnection.Open();
+            int row = (int)cmd.ExecuteScalar();
+
+            sqlConnection.Close();
+            if (row == 0)
+            {
+                validationmessage = "useremail not exists";
+                return false;
+            }
+            string q = "select count(*) from users where useremail=@useremail and userpass=@userpass";
+               // SqlCommand cmd = new SqlCommand(q, sqlConnection);
+                 cmd=new SqlCommand(q, sqlConnection);
+            
+                cmd.Parameters.AddWithValue("@useremail", useremail);
+                cmd.Parameters.AddWithValue("@userpass", userpass);
+                sqlConnection.Open();
+                 row = (int)cmd.ExecuteScalar();
+                
+                sqlConnection.Close();
+            validationmessage = row == 0 ? "credentials not matched" : string.Empty;
+              return row>0;
+            }
+           ---------------------------login_button
+  protected void Button1_Click(object sender, EventArgs e)
+        {
+
+            string useremail=TextBox1.Text;
+            string userpass=TextBox2.Text;
+
+            DAusers dAusers = new DAusers();
+           
+
+           bool exist =dAusers.Authenticateuser(useremail,userpass,out string validationmessage);
+            if (exist)
+            {
+                Session["usersname"] = useremail;
+                Response.Redirect("redirect.aspx");
+            }
+            else
+            {
+                errorlable.Text = validationmessage;
+            }
+        }
